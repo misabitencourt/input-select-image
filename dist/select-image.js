@@ -29,11 +29,12 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-var index = ({btnOkText, btnCancelText, selectDeviceText}) => new Promise((resolve, reject) => {
+var index = ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) => 
+                                                    new Promise((resolve, reject) => {
     let stream = {};
     
     const userMedia = getUserMedia();
-    if (! userMedia) {
+    if (forceFile || (! userMedia)) {
         return fileOpen().then(resolve);
     }
 
@@ -46,7 +47,6 @@ var index = ({btnOkText, btnCancelText, selectDeviceText}) => new Promise((resol
 
     cameraSelect.className = 'camera-selection';
     navigator.mediaDevices.enumerateDevices().then(devices => {
-        console.log(devices);
         el.appendChild(cameraSelect);
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
         devices.filter(d => d.kind === 'videoinput').map(d => ({

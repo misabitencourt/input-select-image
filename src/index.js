@@ -4,11 +4,12 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-export default ({btnOkText, btnCancelText, selectDeviceText}) => new Promise((resolve, reject) => {
+export default ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) => 
+                                                    new Promise((resolve, reject) => {
     let stream = {};
     
     const userMedia = getUserMedia();
-    if (! userMedia) {
+    if (forceFile || (! userMedia)) {
         return fileOpen().then(resolve);
     }
 
@@ -21,7 +22,6 @@ export default ({btnOkText, btnCancelText, selectDeviceText}) => new Promise((re
 
     cameraSelect.className = 'camera-selection';
     navigator.mediaDevices.enumerateDevices().then(devices => {
-        console.log(devices);
         el.appendChild(cameraSelect);
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
         devices.filter(d => d.kind === 'videoinput').map(d => ({
