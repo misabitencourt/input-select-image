@@ -1,6 +1,6 @@
 {
   "name": "input-select-image",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Input to select image from webcam or file",
   "main": "src/index.js",
   "scripts": {
