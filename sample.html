@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sample</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <link rel="stylesheet" href="default-style.css">
+</head>
+<body>
+  
+    <h1>Select image sample</h1>
+
+    <button id="open-webcam">Open webcam</button>
+
+    <div id="target"></div>
+
+    <script src="dist/select-image.js"></script>
+    <script>
+        document.getElementById('open-webcam').addEventListener('click', function() {
+            selectImage({
+                btnOkText: 'OK', 
+                btnCancelText: 'Cancel',
+                selectDeviceText: 'Select device'
+            }).then(function(image) {
+                var img = new Image();
+                img.src = image;
+                document.getElementById('target').appendChild(img);
+            });
+        });
+    </script>
+</body>
+</html>
