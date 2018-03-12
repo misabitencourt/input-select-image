@@ -4,7 +4,7 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-export default ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) => 
+export default ({btnOkText, btnCancelText, selectDeviceText, videoWidth, forceFile=false}) => 
                                                     new Promise((resolve, reject) => {
     let stream = {};
     
@@ -70,6 +70,10 @@ export default ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) =
         constraint = constraint || {};
         constraint.video = constraint.video || true;
 
+        if (videoWidth) {
+            constraint.video = {width: videoWidth};
+        }
+
         navigator.getUserMedia(constraint, localMediaStream => {     
             stream = localMediaStream;   
             video.autoplay = true;
@@ -82,9 +86,13 @@ export default ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) =
 
     cameraSelect.addEventListener('change', e => {
         stream.getTracks().forEach(t => t.stop());
-        startRecording({video: {
+        let videoConstraints = {
             deviceId: {exact: cameraSelect.value}
-        }});
+        };
+        if (videoWidth) {
+            videoConstraints.width = videoWidth;
+        }
+        startRecording({video: videoConstraints});
     });
 
     startRecording();    

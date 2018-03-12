@@ -29,7 +29,7 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-var index = ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) => 
+var index = ({btnOkText, btnCancelText, selectDeviceText, width, forceFile=false}) => 
                                                     new Promise((resolve, reject) => {
     let stream = {};
     
@@ -107,9 +107,13 @@ var index = ({btnOkText, btnCancelText, selectDeviceText, forceFile=false}) =>
 
     cameraSelect.addEventListener('change', e => {
         stream.getTracks().forEach(t => t.stop());
-        startRecording({video: {
+        let videoConstraints = {
             deviceId: {exact: cameraSelect.value}
-        }});
+        };
+        if (width) {
+            videoConstraints.width = width;
+        }
+        startRecording({video: videoConstraints});
     });
 
     startRecording();    
