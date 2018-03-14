@@ -2,7 +2,6 @@ var selectImage = (function () {
 'use strict';
 
 var fileOpen = () => new Promise((resolve, reject) => {
-    const limit = 200000;
     const accept = 'image/x-png,image/gif,image/jpeg';
     const inputFile = document.createElement('input');
     
@@ -12,9 +11,6 @@ var fileOpen = () => new Promise((resolve, reject) => {
     document.body.appendChild(inputFile);
     inputFile.addEventListener('change', e => {
         const file = e.target.files[0];
-        if (file.size > limit) {
-            return reject('MAX_FILE_SIZE');
-        }
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
         reader.readAsDataURL(file);
