@@ -8,10 +8,7 @@ export default () => new Promise((resolve, reject) => {
     inputFile.style.top = '-100px';
     document.body.appendChild(inputFile);
     inputFile.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (file.size > limit) {
-            return reject('MAX_FILE_SIZE');
-        }
+        const file = e.target.files[0];        
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
         reader.readAsDataURL(file);
