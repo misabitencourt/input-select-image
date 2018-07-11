@@ -4,11 +4,19 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-export default ({btnOkText, btnCancelText, selectDeviceText, videoWidth, forceFile=false}) => 
+export default ({
+    btnOkText, 
+    btnCancelText, 
+    selectDeviceText, 
+    videoWidth, 
+    forceFile=false,
+    preferedDevice,
+    deviceConstraints
+}) => 
                                                     new Promise((resolve, reject) => {
     let stream = {};
     
-    const userMedia = getUserMedia();
+    const userMedia = getUserMedia(deviceConstraints);
     if (forceFile || (! userMedia)) {
         return fileOpen().then(resolve);
     }
@@ -21,18 +29,32 @@ export default ({btnOkText, btnCancelText, selectDeviceText, videoWidth, forceFi
     const cameraSelect = document.createElement('select');
 
     cameraSelect.className = 'camera-selection';
-    navigator.mediaDevices.enumerateDevices().then(devices => {
+    navigator.mediaDevices.enumerateDevices().then(devices => {        
         el.appendChild(cameraSelect);
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
-        devices.filter(d => d.kind === 'videoinput').map(d => ({
+        devices.filter(d => {
+            return (d.kind || '').indexOf('video') !== -1;
+        }).map(d => ({
             id: d.deviceId,
             name: d.label || 'Video input'
         })).forEach(d => {
             let opt = document.createElement('option');
             opt.textContent = d.name;
             opt.value = d.id;
+            if (preferedDevice && d.name.indexOf(preferedDevice) !== -1) {
+                opt.selected = true;
+            }
+
             cameraSelect.appendChild(opt);
-        });        
+        });  
+        
+        startRecording({
+            video: {
+                deviceId: {
+                    exact: cameraSelect.value
+                }
+            }            
+        });
     });
     
     snapshotBtn.textContent = btnOkText;
@@ -94,6 +116,4 @@ export default ({btnOkText, btnCancelText, selectDeviceText, videoWidth, forceFi
         }
         startRecording({video: videoConstraints});
     });
-
-    startRecording();    
 });

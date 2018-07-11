@@ -1,5 +1,4 @@
 export default () => new Promise((resolve, reject) => {
-    const limit = 200000;
     const accept = 'image/x-png,image/gif,image/jpeg';
     const inputFile = document.createElement('input');
     

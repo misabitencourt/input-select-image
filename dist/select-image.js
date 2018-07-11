@@ -10,7 +10,7 @@ var fileOpen = () => new Promise((resolve, reject) => {
     inputFile.style.top = '-100px';
     document.body.appendChild(inputFile);
     inputFile.addEventListener('change', e => {
-        const file = e.target.files[0];
+        const file = e.target.files[0];        
         const reader = new FileReader();
         reader.onload = e => resolve(e.target.result);
         reader.readAsDataURL(file);
@@ -25,11 +25,19 @@ function getUserMedia() {
     return navigator.getUserMedia;
 }
 
-var index = ({btnOkText, btnCancelText, selectDeviceText, width, forceFile=false}) => 
+var index = ({
+    btnOkText, 
+    btnCancelText, 
+    selectDeviceText, 
+    videoWidth, 
+    forceFile=false,
+    preferedDevice,
+    deviceConstraints
+}) => 
                                                     new Promise((resolve, reject) => {
     let stream = {};
     
-    const userMedia = getUserMedia();
+    const userMedia = getUserMedia(deviceConstraints);
     if (forceFile || (! userMedia)) {
         return fileOpen().then(resolve);
     }
@@ -42,18 +50,32 @@ var index = ({btnOkText, btnCancelText, selectDeviceText, width, forceFile=false
     const cameraSelect = document.createElement('select');
 
     cameraSelect.className = 'camera-selection';
-    navigator.mediaDevices.enumerateDevices().then(devices => {
+    navigator.mediaDevices.enumerateDevices().then(devices => {        
         el.appendChild(cameraSelect);
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
-        devices.filter(d => d.kind === 'videoinput').map(d => ({
+        devices.filter(d => {
+            return (d.kind || '').indexOf('video') !== -1;
+        }).map(d => ({
             id: d.deviceId,
             name: d.label || 'Video input'
         })).forEach(d => {
             let opt = document.createElement('option');
             opt.textContent = d.name;
             opt.value = d.id;
+            if (preferedDevice && d.name.indexOf(preferedDevice) !== -1) {
+                opt.selected = true;
+            }
+
             cameraSelect.appendChild(opt);
-        });        
+        });  
+        
+        startRecording({
+            video: {
+                deviceId: {
+                    exact: cameraSelect.value
+                }
+            }            
+        });
     });
     
     snapshotBtn.textContent = btnOkText;
@@ -91,6 +113,10 @@ var index = ({btnOkText, btnCancelText, selectDeviceText, width, forceFile=false
         constraint = constraint || {};
         constraint.video = constraint.video || true;
 
+        if (videoWidth) {
+            constraint.video = {width: videoWidth};
+        }
+
         navigator.getUserMedia(constraint, localMediaStream => {     
             stream = localMediaStream;   
             video.autoplay = true;
@@ -106,13 +132,11 @@ var index = ({btnOkText, btnCancelText, selectDeviceText, width, forceFile=false
         let videoConstraints = {
             deviceId: {exact: cameraSelect.value}
         };
-        if (width) {
-            videoConstraints.width = width;
+        if (videoWidth) {
+            videoConstraints.width = videoWidth;
         }
         startRecording({video: videoConstraints});
     });
-
-    startRecording();    
 });
 
 return index;
