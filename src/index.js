@@ -12,8 +12,7 @@ export default ({
     forceFile=false,
     preferedDevice,
     deviceConstraints
-}) => 
-                                                    new Promise((resolve, reject) => {
+}) => new Promise((resolve, reject) => {
     let stream = {};
     
     const userMedia = getUserMedia(deviceConstraints);
@@ -47,14 +46,20 @@ export default ({
 
             cameraSelect.appendChild(opt);
         });  
+
+        let constraints;
+
+        if (cameraSelect.value) {
+            constraints = {
+                video: {
+                    deviceId: {
+                        exact: cameraSelect.value
+                    }
+                }            
+            };
+        }
         
-        startRecording({
-            video: {
-                deviceId: {
-                    exact: cameraSelect.value
-                }
-            }            
-        });
+        startRecording(constraints);
     });
     
     snapshotBtn.textContent = btnOkText;
