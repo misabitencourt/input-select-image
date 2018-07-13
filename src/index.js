@@ -9,6 +9,7 @@ export default ({
     btnCancelText, 
     selectDeviceText, 
     videoWidth, 
+    videoHeight,
     forceFile=false,
     preferedDevice,
     deviceConstraints
@@ -95,10 +96,14 @@ export default ({
 
     const startRecording = constraint => {
         constraint = constraint || {};
-        constraint.video = constraint.video || true;
+        constraint.video = constraint.video || {};
 
         if (videoWidth) {
-            constraint.video = {width: videoWidth};
+            constraint.video.width = {min: videoWidth};
+        }
+
+        if (videoHeight) {
+            constraint.video.height = {min: videoHeight};
         }
 
         navigator.getUserMedia(constraint, localMediaStream => {     
@@ -117,7 +122,7 @@ export default ({
             deviceId: {exact: cameraSelect.value}
         };
         if (videoWidth) {
-            videoConstraints.width = videoWidth;
+            videoConstraints.width = {min: videoWidth};
         }
         startRecording({video: videoConstraints});
     });
