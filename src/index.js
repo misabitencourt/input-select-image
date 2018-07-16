@@ -29,6 +29,11 @@ export default ({
     const cancelBtn = document.createElement('button');
     const cameraSelect = document.createElement('select');
 
+    const fail = err => {
+        el.parentElement.removeChild(el);
+        reject(err);
+    };
+
     cameraSelect.className = 'camera-selection';
     navigator.mediaDevices.enumerateDevices().then(devices => {        
         el.appendChild(cameraSelect);
@@ -62,7 +67,7 @@ export default ({
         }
         
         startRecording(constraints);
-    }).catch(err => reject(err));
+    }).catch(err => fail(err));
     
     snapshotBtn.textContent = btnOkText;
     cancelBtn.textContent = btnCancelText;
@@ -112,7 +117,7 @@ export default ({
             video.autoplay = true;
             el.appendChild(video);
             video.src = window.URL.createObjectURL(localMediaStream);
-        }, err => reject(err));
+        }, err => fail(err));
     };
 
     cameraSelect.addEventListener('change', e => {
