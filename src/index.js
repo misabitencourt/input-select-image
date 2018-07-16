@@ -12,7 +12,8 @@ export default ({
     videoHeight,
     forceFile=false,
     preferedDevice,
-    deviceConstraints
+    deviceConstraints,
+
 }) => new Promise((resolve, reject) => {
     let stream = {};
     
@@ -61,7 +62,7 @@ export default ({
         }
         
         startRecording(constraints);
-    });
+    }).catch(err => reject(err));
     
     snapshotBtn.textContent = btnOkText;
     cancelBtn.textContent = btnCancelText;
@@ -111,9 +112,7 @@ export default ({
             video.autoplay = true;
             el.appendChild(video);
             video.src = window.URL.createObjectURL(localMediaStream);
-        }, () => {
-            console.log('on fail')
-        });
+        }, err => reject(err));
     };
 
     cameraSelect.addEventListener('change', e => {
