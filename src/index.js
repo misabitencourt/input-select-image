@@ -42,13 +42,14 @@ export default ({
             return (d.kind || '').indexOf('video') !== -1;
         }).map((d, i) => ({
             id: d.deviceId,
-            name: cameraNameFormatter ? cameraNameFormatter(d, i) : (d.label || 'Video input')
+            name: cameraNameFormatter ? cameraNameFormatter(d, i) : (d.label || 'Video input'),
+            originalName: d.label || ''
         })).forEach((d, index) => {
             let opt = document.createElement('option');
             opt.textContent = d.name;
             opt.value = d.id;
             if (preferedDevice) {
-                if (d.name.indexOf(preferedDevice) !== -1) {
+                if (d.originalName.indexOf(preferedDevice) !== -1) {
                     opt.selected = true;
                 }
             } else if (index === 0) {
