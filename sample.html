@@ -24,7 +24,9 @@
                 btnOkText: 'OK', 
                 btnCancelText: 'Cancel',                
                 selectDeviceText: 'Select device',
-
+                cameraNameFormatter: function(camera, index) {
+                    return 'Camera #'+(index+1);
+                }
                 // preferedDevice: 'back',
                 // forceFile: true,
                 // deviceConstraints: {
@@ -34,7 +36,13 @@
                 var img = new Image();
                 img.src = image;
                 document.getElementById('target').appendChild(img);
+            }).catch(function(err) {
+                alert(JSON.stringify(err));
             });
+
+            window.onerror = function(a, b, c) {
+                alert(JSON.stringify({a: a, b: b, c: c}));
+            }
         });
     </script>
 </body>

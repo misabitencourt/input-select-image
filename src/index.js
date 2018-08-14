@@ -13,7 +13,7 @@ export default ({
     forceFile=false,
     preferedDevice,
     deviceConstraints,
-
+    cameraNameFormatter
 }) => new Promise((resolve, reject) => {
     let stream = {};
     
@@ -40,16 +40,20 @@ export default ({
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
         devices.filter(d => {
             return (d.kind || '').indexOf('video') !== -1;
-        }).map(d => ({
+        }).map((d, i) => ({
             id: d.deviceId,
-            name: d.label || 'Video input'
-        })).forEach(d => {
+            name: cameraNameFormatter ? cameraNameFormatter(d, i) : (d.label || 'Video input')
+        })).forEach((d, index) => {
             let opt = document.createElement('option');
             opt.textContent = d.name;
             opt.value = d.id;
-            if (preferedDevice && d.name.indexOf(preferedDevice) !== -1) {
+            if (preferedDevice) {
+                if (d.name.indexOf(preferedDevice) !== -1) {
+                    opt.selected = true;
+                }
+            } else if (index === 0) {
                 opt.selected = true;
-            }
+            }            
 
             cameraSelect.appendChild(opt);
         });  
@@ -112,11 +116,18 @@ export default ({
             constraint.video.height = {min: videoHeight};
         }
 
-        navigator.getUserMedia(constraint, localMediaStream => {     
-            stream = localMediaStream;   
+        navigator.getUserMedia(constraint, localMediaStream => {
+            stream = localMediaStream;
             video.autoplay = true;
             el.appendChild(video);
-            video.src = window.URL.createObjectURL(localMediaStream);
+            if ('srcObject' in video) {
+                video.srcObject = localMediaStream;
+                video.setAttribute('playsinline', '');
+                video.play();
+            } else {
+                video.src = window.URL.createObjectURL(localMediaStream);
+            }
+            
         }, err => fail(err));
     };
 
