@@ -13,6 +13,7 @@ export default ({
     forceFile=false,
     preferedDevice,
     deviceConstraints,
+    facingMode,
     cameraNameFormatter
 }) => new Promise((resolve, reject) => {
     let stream = {};
@@ -28,6 +29,7 @@ export default ({
     const snapshotBtn = document.createElement('button');
     const cancelBtn = document.createElement('button');
     const cameraSelect = document.createElement('select');
+    let loadedDevices;
 
     const fail = err => {
         el.parentElement.removeChild(el);
@@ -35,7 +37,8 @@ export default ({
     };
 
     cameraSelect.className = 'camera-selection';
-    navigator.mediaDevices.enumerateDevices().then(devices => {        
+    navigator.mediaDevices.enumerateDevices().then(devices => {   
+        loadedDevices = devices             
         el.appendChild(cameraSelect);
         cameraSelect.innerHTML = `<option value="">${selectDeviceText}</option>`;
         devices.filter(d => {
@@ -117,7 +120,7 @@ export default ({
             constraint.video.height = {min: videoHeight};
         }
 
-        navigator.getUserMedia(constraint, localMediaStream => {
+        const cb = localMediaStream => {
             stream = localMediaStream;
             video.autoplay = true;
             el.appendChild(video);
@@ -129,7 +132,17 @@ export default ({
                 video.src = window.URL.createObjectURL(localMediaStream);
             }
             
-        }, err => fail(err));
+        };
+
+        try {      
+            // IOS      
+            navigator.mediaDevices.getUserMedia({
+                video: facingMode ? {facingMode} : true,                
+            }).then(cb).catch(err => fail(err));
+        } catch (e) {
+            // Android
+            navigator.getUserMedia(constraint, cb, err => fail(err));
+        }        
     };
 
     cameraSelect.addEventListener('change', e => {
