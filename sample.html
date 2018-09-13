@@ -26,7 +26,8 @@
                 selectDeviceText: 'Select device',
                 cameraNameFormatter: function(camera, index) {
                     return 'Camera #'+(index+1);
-                }
+                },
+                // cameraSwitchIcon: 'data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4...',
                 // preferedDevice: 'back',
                 // forceFile: true,
                 // deviceConstraints: {
@@ -36,7 +37,7 @@
                 var img = new Image();
                 img.src = image;
                 document.getElementById('target').appendChild(img);
-            }).catch(function(err) {
+            }).catch(function(err) {                
                 alert(JSON.stringify(err));
             });
 
