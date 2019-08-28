@@ -1,6 +1,6 @@
 # Input to select image
 Using browser javascript to create a user image selection input using webrtc to capture photo. 
-If browser dont supports webrtc, a file dialog will be trigger.
+If browser doesnt supports webrtc, a file dialog will be trigger.
 
 
 ```
